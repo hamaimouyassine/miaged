@@ -45,10 +45,34 @@ La catégorie est calculée à partir de l’image et reste en lecture seule.
 
 ## Images et classification
 
-La classification fonctionne actuellement dans Chrome, avec Transformers.js
-3.8.1 et le modèle Xenova/clip-vit-base-patch32. La bibliothèque et les poids sont
-téléchargés au premier usage, puis la classification s’exécute dans le navigateur.
-Prévoir une connexion Internet au premier lancement.
+L’analyse fonctionne dans Chrome. Elle utilise en priorité Ollama local avec
+`qwen2.5vl:3b` pour proposer une catégorie et un titre court en français.
+La catégorie est en lecture seule. Le titre proposé remplit uniquement un champ
+vide et reste modifiable. Un bouton permet aussi d’appliquer la suggestion.
+
+Pour utiliser Ollama sur la machine de démonstration, installer et lancer
+l’application Ollama, puis télécharger le modèle vision (environ 3,2 Go).
+
+```powershell
+ollama pull qwen2.5vl:3b
+flutter run -d chrome
+```
+
+L’API locale doit être accessible à `http://127.0.0.1:11434`. Le premier
+chargement du modèle en mémoire peut prendre un moment. L’appel utilise un
+schéma JSON qui limite la catégorie aux valeurs prévues et un délai maximal
+de deux minutes. Une miniature de 320 pixels sur son plus grand côté est
+envoyée au service Ollama local. L’image enregistrée conserve sa résolution
+de 640 pixels sur son plus grand côté.
+
+Le modèle peut se tromper sur la catégorie, notamment pour une activité qui
+correspond à plusieurs contextes. Sur un PC sans GPU dédié, l’analyse peut
+prendre plusieurs dizaines de secondes.
+
+Si Ollama ou le modèle est indisponible, l’application utilise Transformers.js
+3.8.1 avec Xenova/clip-vit-base-patch32 pour la catégorie. Le formulaire affiche
+la source de l’analyse et le message de repli. Ce mode CLIP nécessite Internet
+au premier usage pour télécharger la bibliothèque et les poids.
 
 Le fichier est limité à 10 Mo et redimensionné à 640 pixels sur son plus grand
 côté. L’image JPEG est enregistrée dans le document Firestore avec les autres
@@ -56,6 +80,9 @@ champs. Un site peut bloquer l’import par lien depuis le navigateur.
 Dans ce cas, télécharger l’image et importer le fichier.
 
 Sources de la partie IA.
+- https://ollama.com/library/qwen2.5vl:3b
+- https://docs.ollama.com/capabilities/vision
+- https://docs.ollama.com/capabilities/structured-outputs
 - https://huggingface.co/Xenova/clip-vit-base-patch32
 - https://huggingface.co/docs/transformers.js
 
@@ -105,5 +132,6 @@ mettre ce tableau à jour.
 ```powershell
 flutter analyze
 flutter test
+node --test test/activity_classifier_test.cjs
 flutter build web --no-pub --no-wasm-dry-run
 ```

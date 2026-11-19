@@ -1,10 +1,12 @@
 import 'dart:typed_data';
 
+import 'activity_analysis.dart';
+
 Future<Uint8List?> pickActivityImage(int maxBytes) async {
   throw UnsupportedError('La sélection est disponible dans le navigateur.');
 }
 
-Future<String> classifyActivity(String imageUrl) async {
+Future<ActivityAnalysis> analyzeActivity(String imageUrl) async {
   throw UnsupportedError(
     'La classification est disponible dans le navigateur.',
   );
