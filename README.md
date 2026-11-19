@@ -1,6 +1,9 @@
 # MIAGED
 
-Application Flutter du TP2 MIAGE. Les écrans suivent les six user stories du sujet.
+Application Flutter du TP2 MIAGE. La branche `main` est consacrée aux six
+user stories du sujet. La branche `upgraded-version` regroupe les compléments
+(inscription, recherche, filtres par catégorie et assistance Ollama).
+Les deux branches partagent le même style visuel.
 
 ## Lancement
 
@@ -22,12 +25,6 @@ avec `q`, puis relancer l’application pour recharger le JavaScript.
 - US #4. Panier, total et suppression par la croix.
 - US #5. Profil modifiable, login en lecture seule et déconnexion.
 - US #6. Ajout depuis le profil, catégorie déduite de l’image et sauvegarde.
-- Inscription. Création d’un compte depuis la connexion, confirmation du mot
-  de passe et vérification de la disponibilité du login.
-- Compléments. Recherche par titre, lieu ou catégorie et filtre par catégorie.
-  Les filtres proviennent des catégories distinctes non vides de toutes les
-  activités Firestore et sont mis à jour en temps réel. La recherche peut être
-  combinée avec le filtre. **Toutes les catégories** réaffiche toute la liste.
 
 ## Vérification manuelle
 
@@ -94,11 +91,10 @@ Les règles de la base doivent autoriser les lectures et écritures nécessaires
 | testmiage1 | MiageTest1! |
 | testmiage2 | MiageTest2! |
 
-**Préparation nécessaire avant le rendu.** Ces identifiants sont prévus pour les
-tests. Créer les deux comptes avec **Créer un compte**, puis vérifier chaque
-connexion avant de transmettre le dépôt. Leur existence dans Firebase reste à
-confirmer. Si ces logins sont déjà utilisés, choisir deux autres comptes et
-mettre ce tableau à jour.
+Ces deux couples login/password n’ont pas été retrouvés lors de la vérification
+de Firebase. Avant le rendu, créer ces comptes dans la collection `users`
+ou depuis l’inscription de la branche `upgraded-version`, puis tester chaque
+connexion. Si d’autres comptes de test sont utilisés, mettre le tableau à jour.
 
 ## Vérifications techniques
 

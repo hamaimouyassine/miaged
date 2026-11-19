@@ -8,7 +8,6 @@ import 'profile_screen.dart';
 import 'activity_image.dart';
 import 'activity_card.dart';
 import 'page_intro.dart';
-import 'register_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -261,33 +260,6 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: _signIn,
                         child: const Text('Se connecter'),
                       ),
-                const SizedBox(height: 12),
-                OutlinedButton(
-                  onPressed: _isLoading
-                      ? null
-                      : () async {
-                          final login = await Navigator.of(context)
-                              .push<String>(
-                                MaterialPageRoute(
-                                  builder: (context) => const RegisterScreen(),
-                                ),
-                              );
-                          if (!mounted || !context.mounted || login == null) {
-                            return;
-                          }
-                          _loginController.text = login;
-                          _passwordController.clear();
-                          setState(() => _errorMessage = null);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'Compte créé. Vous pouvez vous connecter.',
-                              ),
-                            ),
-                          );
-                        },
-                  child: const Text('Créer un compte'),
-                ),
               ],
             ),
           ),
@@ -376,8 +348,6 @@ class _ActivitiesListScreenState extends State<ActivitiesListScreen> {
   late final _activities = FirebaseFirestore.instance
       .collection('activities')
       .snapshots();
-  String _search = '';
-  String? _selectedCategory;
 
   @override
   Widget build(BuildContext context) {
@@ -401,35 +371,7 @@ class _ActivitiesListScreenState extends State<ActivitiesListScreen> {
           );
         }
 
-        final documents = snapshot.data!.docs;
-        final categories =
-            documents
-                .map((doc) {
-                  final data = doc.data() as Map<String, dynamic>;
-                  return data['category']?.toString().trim() ?? '';
-                })
-                .where((category) => category.isNotEmpty)
-                .toSet()
-                .toList()
-              ..sort(
-                (first, second) =>
-                    first.toLowerCase().compareTo(second.toLowerCase()),
-              );
-
-        // Une catégorie supprimée de la base ne doit pas masquer la liste.
-        if (!categories.contains(_selectedCategory)) {
-          _selectedCategory = null;
-        }
-
-        final activities = documents.where((doc) {
-          final data = doc.data() as Map<String, dynamic>;
-          final searchable =
-              '${data['title'] ?? ''} ${data['location'] ?? ''} ${data['category'] ?? ''}'
-                  .toLowerCase();
-          final category = data['category']?.toString().trim() ?? '';
-          return (_selectedCategory == null || category == _selectedCategory) &&
-              searchable.contains(_search);
-        }).toList();
+        final activities = snapshot.data!.docs;
 
         return CustomScrollView(
           slivers: [
@@ -465,39 +407,6 @@ class _ActivitiesListScreenState extends State<ActivitiesListScreen> {
                         ],
                       ),
                     ),
-                    TextField(
-                      decoration: const InputDecoration(
-                        labelText: 'Rechercher une activité',
-                        hintText: 'Titre, lieu ou catégorie',
-                        prefixIcon: Icon(Icons.search),
-                      ),
-                      onChanged: (value) =>
-                          setState(() => _search = value.trim().toLowerCase()),
-                    ),
-                    const SizedBox(height: 12),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        ChoiceChip(
-                          label: const Text('Toutes les catégories'),
-                          selected: _selectedCategory == null,
-                          onSelected: (_) =>
-                              setState(() => _selectedCategory = null),
-                        ),
-                        for (final category in categories)
-                          ChoiceChip(
-                            label: Text(category),
-                            selected: _selectedCategory == category,
-                            onSelected: (selected) => setState(
-                              () => _selectedCategory = selected
-                                  ? category
-                                  : null,
-                            ),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
                     Text(
                       '${activities.length} résultat(s)',
                       style: Theme.of(context).textTheme.bodySmall,
@@ -511,9 +420,7 @@ class _ActivitiesListScreenState extends State<ActivitiesListScreen> {
               const SliverToBoxAdapter(
                 child: Padding(
                   padding: EdgeInsets.all(32),
-                  child: Text(
-                    'Aucune activité ne correspond à votre recherche.',
-                  ),
+                  child: Text('Aucune activité disponible pour le moment.'),
                 ),
               )
             else

@@ -26,33 +26,6 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('L’inscription vérifie les champs et la confirmation', (
-    tester,
-  ) async {
-    await tester.pumpWidget(const MiagedApp());
-    await tester.ensureVisible(find.text('Créer un compte'));
-    await tester.tap(find.text('Créer un compte'));
-    await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text('Créer mon compte'));
-    await tester.tap(find.text('Créer mon compte'));
-    await tester.pump();
-    expect(find.text('Saisissez un login.'), findsOneWidget);
-    expect(find.text('Saisissez un mot de passe.'), findsOneWidget);
-
-    final fields = find.byType(TextFormField);
-    await tester.enterText(fields.at(0), 'testmiage1');
-    await tester.enterText(fields.at(1), 'MiageTest1!');
-    await tester.enterText(fields.at(2), 'different');
-    await tester.ensureVisible(find.text('Créer mon compte'));
-    await tester.tap(find.text('Créer mon compte'));
-    await tester.pump();
-    expect(
-      find.text('Les mots de passe doivent être identiques.'),
-      findsOneWidget,
-    );
-    expect(tester.takeException(), isNull);
-  });
-
   testWidgets('Le login tient dans un écran mobile', (tester) async {
     tester.view.physicalSize = const Size(320, 568);
     tester.view.devicePixelRatio = 1;
