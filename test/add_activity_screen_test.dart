@@ -13,7 +13,7 @@ void main() {
       addTearDown(tester.view.resetDevicePixelRatio);
       await tester.pumpWidget(const MaterialApp(home: AddActivityScreen()));
 
-      expect(find.text('Image et catégorie'), findsOneWidget);
+      expect(find.text('Image'), findsOneWidget);
       expect(find.text('Informations de l’activité'), findsOneWidget);
       expect(tester.takeException(), isNull);
 

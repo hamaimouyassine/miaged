@@ -251,8 +251,8 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
     final colors = Theme.of(context).colorScheme;
     return _section(
       '1',
-      'Image et catégorie',
-      'Choisissez une photo de votre activité. La catégorie sera définie automatiquement.',
+      'Image',
+      'Choisissez une photo de votre activité depuis votre PC ou avec un lien direct.',
       [
         Container(
           height: 210,
@@ -328,56 +328,16 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
         if (!kIsWeb) ...[
           const SizedBox(height: 12),
           const Text(
-            'Ouvrez MIAGED dans le navigateur pour analyser une image.',
+            'Ouvrez MIAGED dans le navigateur pour importer une image.',
           ),
         ],
         const SizedBox(height: 24),
         if (_classifying) ...[
           const LinearProgressIndicator(),
           const SizedBox(height: 12),
-          const Text(
-            'Analyse de l’image… Le premier chargement peut prendre un moment.',
-          ),
+          const Text('Préparation de l’image…'),
           const SizedBox(height: 16),
         ],
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: colors.primaryContainer.withValues(alpha: 0.35),
-            borderRadius: BorderRadius.circular(14),
-          ),
-          child: Row(
-            children: [
-              Icon(
-                _category == null
-                    ? Icons.auto_awesome_outlined
-                    : Icons.check_circle_outline,
-                color: colors.primary,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Catégorie automatique',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: colors.onSurfaceVariant,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      _category ?? 'En attente d’une image',
-                      style: const TextStyle(fontWeight: FontWeight.w700),
-                    ),
-                  ],
-                ),
-              ),
-              const Icon(Icons.lock_outline, size: 16),
-            ],
-          ),
-        ),
       ],
     );
   }
@@ -387,6 +347,11 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
     'Informations de l’activité',
     'Renseignez les informations qui seront affichées dans la liste et la fiche.',
     [
+      InputDecorator(
+        decoration: const InputDecoration(labelText: 'Catégorie'),
+        child: Text(_category ?? 'Choisissez une image'),
+      ),
+      const SizedBox(height: 12),
       _field(
         _title,
         'Titre',
@@ -437,7 +402,7 @@ class _AddActivityScreenState extends State<AddActivityScreen> {
       if (_category == null) ...[
         const SizedBox(height: 12),
         const Text(
-          'Choisissez une image et attendez sa catégorie pour valider.',
+          'Choisissez une image pour valider votre activité.',
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 12, color: Color(0xFF65777B)),
         ),
