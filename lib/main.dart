@@ -6,6 +6,7 @@ import 'firebase_options.dart';
 import 'cart_screen.dart';
 import 'profile_screen.dart';
 import 'activity_image.dart';
+import 'activity_card.dart';
 import 'page_intro.dart';
 import 'register_screen.dart';
 
@@ -363,14 +364,25 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 // -------------------------------------------------------------
 // US#2 : LISTE DES ACTIVITÉS
 // -------------------------------------------------------------
-class ActivitiesListScreen extends StatelessWidget {
+class ActivitiesListScreen extends StatefulWidget {
   final String userId;
   const ActivitiesListScreen({super.key, required this.userId});
 
   @override
+  State<ActivitiesListScreen> createState() => _ActivitiesListScreenState();
+}
+
+class _ActivitiesListScreenState extends State<ActivitiesListScreen> {
+  late final _activities = FirebaseFirestore.instance
+      .collection('activities')
+      .snapshots();
+  String _search = '';
+  String? _selectedCategory;
+
+  @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('activities').snapshots(),
+      stream: _activities,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -389,115 +401,174 @@ class ActivitiesListScreen extends StatelessWidget {
           );
         }
 
-        final activities = snapshot.data!.docs;
-
-        return ListView.builder(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-          itemCount: activities.length + 1,
-          itemBuilder: (context, index) {
-            if (index == 0) {
-              return const PageIntro(
-                icon: Icons.explore_outlined,
-                title: 'À vous de choisir.',
-                subtitle: 'Découvrez les activités et trouvez votre prochaine sortie.',
+        final documents = snapshot.data!.docs;
+        final categories =
+            documents
+                .map((doc) {
+                  final data = doc.data() as Map<String, dynamic>;
+                  return data['category']?.toString().trim() ?? '';
+                })
+                .where((category) => category.isNotEmpty)
+                .toSet()
+                .toList()
+              ..sort(
+                (first, second) =>
+                    first.toLowerCase().compareTo(second.toLowerCase()),
               );
-            }
-            final doc = activities[index - 1];
-            final data = doc.data() as Map<String, dynamic>;
 
-            final title = data['title']?.toString() ?? 'Sans titre';
-            final location =
-                data['location']?.toString() ?? 'Lieu non spécifié';
-            final price = data['price'] ?? 0;
-            final imageUrl = data['imageUrl']?.toString() ?? '';
+        // Une catégorie supprimée de la base ne doit pas masquer la liste.
+        if (!categories.contains(_selectedCategory)) {
+          _selectedCategory = null;
+        }
 
-            return Card(
-              child: InkWell(
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (context) => ActivityDetailScreen(
-                        cartItem: userCart(userId).doc(doc.id),
-                        title: title,
-                        location: location,
-                        price: price,
-                        imageUrl: imageUrl,
-                        category:
-                            data['category']?.toString() ?? 'Non renseignée',
-                        maxParticipants:
-                            data['maxParticipants']?.toString() ??
-                            'Non renseigné',
-                      ),
-                    ),
-                  );
-                },
-                child: Row(
+        final activities = documents.where((doc) {
+          final data = doc.data() as Map<String, dynamic>;
+          final searchable =
+              '${data['title'] ?? ''} ${data['location'] ?? ''} ${data['category'] ?? ''}'
+                  .toLowerCase();
+          final category = data['category']?.toString().trim() ?? '';
+          return (_selectedCategory == null || category == _selectedCategory) &&
+              searchable.contains(_search);
+        }).toList();
+
+        return CustomScrollView(
+          slivers: [
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              sliver: SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Image(
-                      image: activityImage(imageUrl),
-                      width: 120,
-                      height: 132,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Container(
-                        width: 120,
-                        height: 132,
-                        color: Colors.grey.shade300,
-                        child: const Icon(
-                          Icons.landscape_outlined,
-                          color: Colors.grey,
-                        ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20, bottom: 24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Découvrez votre prochaine activité.',
+                            style: Theme.of(context).textTheme.headlineMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: -0.8,
+                                ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Un moment pour bouger, créer ou explorer.',
+                            style: Theme.of(context).textTheme.bodyLarge
+                                ?.copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant,
+                                ),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 12, 16, 12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              title,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.location_on,
-                                  size: 16,
-                                  color: Colors.grey,
-                                ),
-                                const SizedBox(width: 4),
-                                Expanded(
-                                  child: Text(
-                                    location,
-                                    style: const TextStyle(color: Colors.grey),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              '$price €',
-                              style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF006D77),
-                              ),
-                            ),
-                          ],
-                        ),
+                    TextField(
+                      decoration: const InputDecoration(
+                        labelText: 'Rechercher une activité',
+                        hintText: 'Titre, lieu ou catégorie',
+                        prefixIcon: Icon(Icons.search),
                       ),
+                      onChanged: (value) =>
+                          setState(() => _search = value.trim().toLowerCase()),
                     ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        ChoiceChip(
+                          label: const Text('Toutes les catégories'),
+                          selected: _selectedCategory == null,
+                          onSelected: (_) =>
+                              setState(() => _selectedCategory = null),
+                        ),
+                        for (final category in categories)
+                          ChoiceChip(
+                            label: Text(category),
+                            selected: _selectedCategory == category,
+                            onSelected: (selected) => setState(
+                              () => _selectedCategory = selected
+                                  ? category
+                                  : null,
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${activities.length} résultat(s)',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: 12),
                   ],
                 ),
               ),
-            );
-          },
+            ),
+            if (activities.isEmpty)
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.all(32),
+                  child: Text(
+                    'Aucune activité ne correspond à votre recherche.',
+                  ),
+                ),
+              )
+            else
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+                sliver: SliverLayoutBuilder(
+                  builder: (context, constraints) {
+                    final columns = constraints.crossAxisExtent >= 620 ? 2 : 1;
+                    final textGrowth =
+                        MediaQuery.textScalerOf(context).scale(16) - 16;
+                    return SliverGrid(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: columns,
+                        crossAxisSpacing: 20,
+                        mainAxisSpacing: 20,
+                        mainAxisExtent: 365 + textGrowth * 7,
+                      ),
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        final doc = activities[index];
+                        final data = doc.data() as Map<String, dynamic>;
+                        final title = data['title']?.toString() ?? 'Sans titre';
+                        final location =
+                            data['location']?.toString() ?? 'Lieu non spécifié';
+                        final category =
+                            data['category']?.toString() ?? 'Non renseignée';
+                        final price = data['price'] ?? 0;
+                        final imageUrl = data['imageUrl']?.toString() ?? '';
+                        return ActivityCard(
+                          title: title,
+                          location: location,
+                          category: category,
+                          price: price,
+                          imageUrl: imageUrl,
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (context) => ActivityDetailScreen(
+                                cartItem: userCart(widget.userId).doc(doc.id),
+                                title: title,
+                                location: location,
+                                price: price,
+                                imageUrl: imageUrl,
+                                category: category,
+                                maxParticipants:
+                                    data['maxParticipants']?.toString() ??
+                                    'Non renseigné',
+                              ),
+                            ),
+                          ),
+                        );
+                      }, childCount: activities.length),
+                    );
+                  },
+                ),
+              ),
+          ],
         );
       },
     );

@@ -24,6 +24,10 @@ avec `q`, puis relancer l’application pour recharger le JavaScript.
 - US #6. Ajout depuis le profil, catégorie déduite de l’image et sauvegarde.
 - Inscription. Création d’un compte depuis la connexion, confirmation du mot
   de passe et vérification de la disponibilité du login.
+- Compléments. Recherche par titre, lieu ou catégorie et filtre par catégorie.
+  Les filtres proviennent des catégories distinctes non vides de toutes les
+  activités Firestore et sont mis à jour en temps réel. La recherche peut être
+  combinée avec le filtre. **Toutes les catégories** réaffiche toute la liste.
 
 ## Vérification manuelle
 
@@ -54,6 +58,23 @@ Dans ce cas, télécharger l’image et importer le fichier.
 Sources de la partie IA.
 - https://huggingface.co/Xenova/clip-vit-base-patch32
 - https://huggingface.co/docs/transformers.js
+
+## Activités et photos de démonstration
+
+Quatre activités fictives ont été ajoutées dans la collection Firestore
+`activities`, avec des photos générées par IA. Les lieux, prix et capacités
+ont été choisis pour la démonstration du TP.
+
+| Activité | Catégorie | Prix | Personnes maximum | Photo |
+| --- | --- | --- | --- | --- |
+| Randonnée découverte | Plein air | 15 € | 12 | [Randonnée](images/activities/randonnee.jpg) |
+| Yoga au parc | Sport | 12 € | 10 | [Yoga](images/activities/yoga.jpg) |
+| Atelier pâtes fraîches | Gastronomie | 35 € | 8 | [Cuisine](images/activities/cuisine.jpg) |
+| Initiation à la peinture | Culture | 25 € | 10 | [Peinture](images/activities/peinture.jpg) |
+
+Les photos sont incluses dans le dépôt pour tester la classification via
+**Profil → Ajouter une activité → Choisir une image**. Les catégories du tableau
+sont celles prévues pour le catalogue. Les prédictions du modèle peuvent varier.
 
 ## Données Firestore
 
