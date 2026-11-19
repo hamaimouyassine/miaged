@@ -18,7 +18,7 @@ void main() {
           body: MediaQuery(
             data: const MediaQueryData(textScaler: TextScaler.linear(2)),
             child: SizedBox(
-              height: 477,
+              height: 447,
               child: ActivityCard(
                 title: 'Atelier de cuisine et découverte des pâtes fraîches',
                 location: 'Atelier cuisine, centre-ville de Nice',
@@ -33,6 +33,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    expect(tester.widget<Image>(find.byType(Image)).fit, BoxFit.contain);
     expect(tester.takeException(), isNull);
     await tester.tap(find.text('Voir le détail'));
     expect(opened, isTrue);

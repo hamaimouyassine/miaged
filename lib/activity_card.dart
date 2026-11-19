@@ -32,29 +32,32 @@ class ActivityCard extends StatelessWidget {
           children: [
             Stack(
               children: [
-                Image(
-                  image: activityImage(imageUrl),
-                  height: 170,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Container(
+                ColoredBox(
+                  color: const Color(0xFFEAF1F1),
+                  child: Image(
+                    image: activityImage(imageUrl),
                     height: 170,
-                    color: const Color(0xFFE2EEEE),
-                    alignment: Alignment.center,
-                    child: const Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.landscape_outlined,
-                          size: 40,
-                          color: Color(0xFF6C9094),
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          'Aperçu indisponible',
-                          style: TextStyle(color: Color(0xFF456B70)),
-                        ),
-                      ],
+                    width: double.infinity,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      height: 170,
+                      color: const Color(0xFFE2EEEE),
+                      alignment: Alignment.center,
+                      child: const Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.landscape_outlined,
+                            size: 40,
+                            color: Color(0xFF6C9094),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            'Aperçu indisponible',
+                            style: TextStyle(color: Color(0xFF456B70)),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

@@ -529,7 +529,7 @@ class _ActivitiesListScreenState extends State<ActivitiesListScreen> {
                         crossAxisCount: columns,
                         crossAxisSpacing: 20,
                         mainAxisSpacing: 20,
-                        mainAxisExtent: 365 + textGrowth * 7,
+                        mainAxisExtent: 335 + textGrowth * 7,
                       ),
                       delegate: SliverChildBuilderDelegate((context, index) {
                         final doc = activities[index];
@@ -639,7 +639,7 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
                   image: activityImage(widget.imageUrl),
                   height: 220,
                   width: double.infinity,
-                  fit: BoxFit.cover,
+                  fit: BoxFit.contain,
                   errorBuilder: (context, error, stackTrace) => Container(
                     height: 220,
                     color: Colors.grey.shade300,
