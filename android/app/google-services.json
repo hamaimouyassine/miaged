@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "283450783578",
+    "project_id": "miaged-app-c95e5",
+    "storage_bucket": "miaged-app-c95e5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:283450783578:android:36f14c7c91048f5ca36563",
+        "android_client_info": {
+          "package_name": "com.example.miaged"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD2ji0_rdB0vxQgNulvqaFPo_86DKHG78s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
